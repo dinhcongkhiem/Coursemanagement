@@ -1,0 +1,81 @@
+.find-team{
+    padding: 20px;
+    animation: OpacityAnimation ease .3s;
+}
+
+.find-team-container{
+    display: flex;
+    height: 100%;
+    margin: auto;
+    
+}
+.find-team-container .list-courses{
+    width: 500px;
+}
+.find-team-container .arrow-icon {
+    transform: rotate(180deg);
+    color: #eee;
+    font-size: 24px;
+    position: absolute;
+    right: -16px;
+    animation: modalFadeIn ease .1s;
+
+}
+.find-team-container .list-team{
+    
+    width: 350px;
+    left: 515px;
+    top: 0;
+    animation: modalFadeIn ease .3s;
+
+}
+.teammate-container .avt-image{
+    width: 45px;
+    height: 45px;
+    margin-left: 5px;
+    margin-right: 15px;
+}
+.teammate-container .name-std{
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+}
+.teammate-container .desire {
+    font-weight: 400;
+    opacity: .8;
+}
+
+.teammate-container .infor-teammate{
+    width: 100%;
+}
+.teammate-container .btn-connect{
+    border: none;
+    background-color: #2175B9;
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 6px;
+    float: right;
+}
+.teammate-container .btn-connect:hover{
+    opacity: .6;
+}
+
+
+@keyframes modalFadeIn{
+    from{
+        transform: translateY(-140px);
+        opacity: 0;
+    }
+    to{
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+@keyframes OpacityAnimation{
+    from{
+        opacity: 0;
+    }
+    to{
+        opacity: 1;
+    }
+}

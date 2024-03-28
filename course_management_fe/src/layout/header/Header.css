@@ -1,0 +1,60 @@
+.header {
+    background-color: #070758;
+    height: 62px;
+    padding: 0px 70px;
+    position: sticky;
+    top: 0;
+    z-index: 15;
+}
+
+.header .user{
+    border-radius: 50%;
+    background-color: #002b59;
+    margin-right: 40px;
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    position: relative;
+    cursor: pointer;
+
+
+}
+
+
+.header .user:hover,
+.header .notification:hover {
+    opacity: 0.4;
+}
+
+
+.header .icon {
+    font-size: 24px;
+    color : #fff;
+    position: absolute !important;
+    top: 8px;
+    left: 10px;
+}
+.header .profile{
+    position: relative;
+}
+
+.header .list-menu {
+    position: absolute;
+    width: 150px;
+    right: 50px;
+    animation: popupMenu ease .3s;
+    cursor: pointer;
+
+}
+
+
+
+
+@keyframes popupMenu{
+    from{
+        opacity: 0;
+    }
+    to{
+        opacity: 1;
+    }
+}

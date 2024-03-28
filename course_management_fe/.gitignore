@@ -1,0 +1,23 @@
+# Thư mục và tệp tin tạm
+node_modules/
+*.log
+*.tmp
+
+# Thư mục tạo ra bởi IDE và các công cụ
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Thư mục và tệp liên quan đến build
+build/
+dist/
+*.jar
+
+# Tệp tin cấu hình cụ thể cho môi trường cụ thể
+.env
+.env.local
+.env.*.local
+
+# Các phụ thuộc được quản lý bởi bower
+bower_components/

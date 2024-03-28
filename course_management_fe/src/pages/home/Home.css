@@ -1,0 +1,34 @@
+.btn-insert{
+    margin: 15px 0;
+    color: #fff;
+    padding: 5px 15px;
+    border: none;
+    background-color: #333; 
+    border-radius: 5px;
+}
+.home-container{
+    animation: OpacityAnimation ease .3s;
+    width: 100%;
+    flex-grow: 1; /* Container sẽ mở rộng để lấp đầy không gian còn trống trong parent */
+    overflow: auto; /* Cho phép container cuộn nếu nội dung vượt quá kích thước của parent */
+}
+.home-container .action-course{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.home-container .action-course button{
+   border: 0;
+   background-color: white;
+}
+.home-container .action-course button:hover{
+    opacity: 0.4;
+}
+@keyframes OpacityAnimation{
+    from{
+        opacity: 0;
+    }
+    to{
+        opacity: 1;
+    }
+}

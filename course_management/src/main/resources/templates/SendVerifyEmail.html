@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>Hello <span th:text="${student.student_name}"></span></h1>
+    <p>Welcome to RMIT University</p>
+    <p>Please click this link to active your account, thanks !</p>
+    <a th:href="'http://localhost:3000/verify/redirect?activeKey=' + ${student.activeKey}">Click here to activate</a>
+</body>
+</html>

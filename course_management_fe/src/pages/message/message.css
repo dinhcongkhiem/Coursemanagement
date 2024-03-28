@@ -1,0 +1,143 @@
+.message-container {
+    height: calc(100vh - 62px);
+    overflow: hidden;
+}
+
+.list-contact {
+    overflow-y: auto;
+    border-right: 2px solid black;
+    padding: 15px 10px 0 10px;
+    height: 100%;
+}
+
+.list-contact p {
+    margin: 0;
+}
+
+.list-contact h3 {
+    margin-bottom: 25px;
+}
+
+.list-contact .infor-contact {
+    margin-left: 15px;
+}
+
+.list-contact .chat-room {
+    cursor: pointer;
+    display: flex;
+    width: 300px;
+    border-radius: 10px;
+    padding: 8px 20px;
+    align-items: center
+}
+
+.list-contact .chat-room:hover {
+    background-color: #c3c3c3;
+
+}
+
+.chat-room .img-contact img {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 50%;
+
+
+}
+
+.chat-room .contact-name p {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.chat-room .prev-message p {
+    font-size: 12px;
+    font-style: 300;
+}
+
+.active {
+    background-color: #a1b4d8 !important;
+
+}
+
+/* -----------chat container------------ */
+
+.chat-container {
+    flex: 1 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-container .header-chat {
+    width: 100%;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+    height: 65px;
+
+}
+
+.chat-container .content-chat {
+    flex: 1 1;
+}
+
+.chat-container .input-chat {
+    display: flex;
+    padding: 10px 15px
+}
+
+.chat-container .input-chat input {
+    flex: 1 1;
+    border-radius: 20px;
+    background-color: #ddd;
+    border: none;
+    padding: 5px 15px;
+    outline: none;
+
+}
+
+.chat-container .input-chat button {
+    background-color: #fff;
+    border: none;
+
+
+}
+
+.chat-container .input-chat input:focus {
+    border: none;
+
+
+}
+
+/* ------------------------------------------- */
+
+.chat-container .content-chat {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    overflow: scroll;
+    scroll-behavior: smooth;
+}
+
+.chat-container .message-block {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    gap: 7px;
+    flex-shrink: 0;
+}
+
+.chat-container .avt-texter img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.chat-container .message {
+    border-radius: 19px;
+    background-color: #bbb;
+    padding: 6px 10px;
+}
+
+.chat-container .message p {
+    margin: 2px 1px;
+}
