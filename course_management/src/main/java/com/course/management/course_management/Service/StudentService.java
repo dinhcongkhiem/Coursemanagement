@@ -47,11 +47,14 @@ public class StudentService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final OTPService otpService;
-    @Value("${files.dir}")
+    @Value("${avatar.dir}")
     private String uploadDir;
 
-    @Value("${files.url}")
+    @Value("${avatar.url}")
     private String filesUrl;
+
+    @Value("${avatar.defaulUrl")
+    private String defaultAvatar;
     @Autowired
     private JavaMailSender mailSender;
     public void resigterStudent(Student student)  {
@@ -69,6 +72,7 @@ public class StudentService {
                     .address(student.getAddress())
                     .phoneNum(student.getPhoneNum())
                     .activeKey(this.generateActiveKey())
+                    .avatar(this.defaultAvatar)
                     .refreshToken(this.generateRefreshToken(student.getEmail()))
                     .build();
             this.sendEmail(newStudent,"Welcome to RMIT University","SendVerifyEmail");

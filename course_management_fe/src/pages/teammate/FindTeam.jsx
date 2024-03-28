@@ -4,7 +4,7 @@ import Navbar from '../navbar/Navbar';
 import StudentService from '../../service/StudentService';
 import ConnectionService from '../../service/ConnectionService';
 import { useSocket } from '../../context/SocketContext';
-export default function FindTeamMate() {
+export default function FindTeamMate({setLoading}) {
     const [indexPopup, setIndexPopup] = useState(null);
     const [listCourse, setListCourse] = useState([]);
     const [listStudentInAllCourse, setListStudentInAllCourse] = useState([])
@@ -57,8 +57,7 @@ export default function FindTeamMate() {
         setIndexPopup(index)
     }
     const handleConnectStudent = (receiverId) => {
-        
-        console.log(listStudentInAllCourse[indexPopup]);
+        setLoading(true)
         ConnectionService.createConnection(receiverId)
             .then((response) => {
                 if(response.status === 200){
@@ -75,12 +74,15 @@ export default function FindTeamMate() {
 
                                 }
                             }
+                            setLoading(false)
                         });
                     
                 }
             })
             .catch((error) => {
                 console.log(error);
+                setLoading(false)
+
             });
     }
     return (

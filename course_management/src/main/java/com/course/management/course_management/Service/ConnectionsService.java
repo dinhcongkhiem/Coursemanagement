@@ -44,6 +44,9 @@ public class ConnectionsService {
             Connections connection = existingConnection.get();
             connection.setConnected(true);
             connectionsRepository.save(connection);
+            this.sendEmail(currentStudent, receiver);
+            this.sendEmail(receiver, currentStudent);
+
             return connection;
         } else {
             Connections newConnection = Connections.builder()
@@ -86,20 +89,21 @@ public class ConnectionsService {
     }
 
 
-    public void sendEmail(Student student) {
+    public void sendEmail(Student currentStudent, Student student) {
         try {
             String emailFrom = "khiemcongdinh@gmail.com";
-            String subject = "Welcome to RMIT University";
+            String subject = " Successful Connection on Courses management";
 
             Context context = new Context();
-            context.setVariable("student", student);
+            context.setVariable("student1", currentStudent);
+            context.setVariable("student2", student);
 
-            String htmlContent = templateEngine.process("SendVerifyEmail", context);
+            String htmlContent = templateEngine.process("ConnectSuccess", context);
             MimeMessage mimeMessage = mailSender.createMimeMessage();
 
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
             helper.setFrom(emailFrom);
-            helper.setTo(student.getEmail());
+            helper.setTo(currentStudent.getEmail());
             helper.setSubject(subject);
             helper.setText(htmlContent, true);
 

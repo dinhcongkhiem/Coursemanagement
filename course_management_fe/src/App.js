@@ -36,7 +36,7 @@ function App() {
           } />
           <Route path="/team" element={
             <PrivateRoute authenticated={isAuthenticated} setLoading={setLoading}>
-              <FindTeamMate />
+              <FindTeamMate  setLoading={setLoading}/>
             </PrivateRoute>
           } />
           <Route path="/message" element={
