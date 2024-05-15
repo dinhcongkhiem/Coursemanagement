@@ -12,6 +12,9 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -26,13 +29,16 @@ import java.util.Optional;
 
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
+@Slf4j
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private JwtService jwtService;
+    private final JwtService jwtService;
     private final StudentRepository studentRepository;
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
 
+    @Value("${client.url}")
+    private String client_url;
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         String targetUrl = determineTargetUrl(request, response, authentication);
@@ -48,7 +54,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         Optional<String> redirectUri = this.getCookie(request, "redirect_uri")
                 .map(Cookie::getValue);
-
         if(redirectUri.isPresent() && !isAuthorizedRedirectUri(redirectUri.get())) {
             throw new BadRequestException("Sorry! We've got an Unauthorized Redirect URI and can't proceed with the authentication");
         }
@@ -56,9 +61,9 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
         Student student = getCurrentStudent().orElseThrow();
         String token = jwtService.generateToken(student);
-
         return UriComponentsBuilder.fromUriString(targetUrl)
                 .queryParam("token", token)
+                .queryParam("refreshToken",student.getRefreshToken())
                 .build().toUriString();
     }
     public Optional<Student> getCurrentStudent() {
@@ -69,7 +74,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 return studentRepository.findByEmail(oauth2User.getAttribute("email"));
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     protected void clearAuthenticationAttributes(HttpServletRequest request, HttpServletResponse response) {
@@ -78,20 +83,11 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     }
 
     private boolean isAuthorizedRedirectUri(String uri) {
-        URI clientRedirectUri = URI.create(uri);
-        List<String> authorizedRedirectUris = List.of("http://localhost:3000/oauth2/redirect");
-
-        return authorizedRedirectUris
-                .stream()
-                .anyMatch(authorizedRedirectUri -> {
-                    // Only validate host and port. Let the clients use different paths if they want to
-                    URI authorizedURI = URI.create(authorizedRedirectUri);
-                    if(authorizedURI.getHost().equalsIgnoreCase(clientRedirectUri.getHost())
-                            && authorizedURI.getPort() == clientRedirectUri.getPort()) {
-                        return true;
-                    }
-                    return false;
-                });
+        String RedirectUri = client_url + "/oauth2/redirect";
+        String RedirectUri_http = client_url + ":80/oauth2/redirect";
+        String RedirectUri_https = client_url + ":443/oauth2/redirect";
+        List<String> authorizedRedirectUris = List.of(RedirectUri, RedirectUri_http, RedirectUri_https);
+        return authorizedRedirectUris.contains(uri);
     }
 
     public static Optional<Cookie> getCookie(HttpServletRequest request, String name) {

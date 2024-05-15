@@ -6,6 +6,8 @@ import imgslide2 from '../../assets/image/img-slider1.jpg'
 import Carousel from 'react-bootstrap/Carousel';
 import StudentService from '../../service/StudentService';
 import { toast } from 'react-toastify';
+import { GOOGLE_AUTH_URL } from '../../constants';
+
 
 export default function Register({setLoading}) {
     const images = [
@@ -188,10 +190,10 @@ export default function Register({setLoading}) {
                     </div>
 
                     <div className="row wrap-btn">
-                        <button type="submit" value="Submit" className='btn'>
+                        <a href={GOOGLE_AUTH_URL} type="submit" value="Submit" className='btn'>
                             <i className="fa-brands fa-google"></i>
-                            Google</button>
-
+                            Google
+                        </a>
                     </div>
                 </div>
                 <div className='slider'>

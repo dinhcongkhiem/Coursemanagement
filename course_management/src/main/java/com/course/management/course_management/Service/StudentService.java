@@ -6,13 +6,14 @@ import com.course.management.course_management.Exception.StudentNotFoundExceptio
 import com.course.management.course_management.Model.Student;
 import com.course.management.course_management.Repository.StudentRepository;
 import com.course.management.course_management.Request.ChangePasswordRequest;
+import com.course.management.course_management.Response.LoginResponse;
 import com.course.management.course_management.Response.StudentResponse;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -47,14 +48,11 @@ public class StudentService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final OTPService otpService;
-    @Value("${avatar.dir}")
-    private String uploadDir;
-
-    @Value("${avatar.url}")
-    private String filesUrl;
-
-    @Value("${avatar.defaulUrl")
+    private final AmazonS3Service amazonS3Service;
+    @Value("${avatar.defaulUrl}")
     private String defaultAvatar;
+    @Value("${client.url}")
+    private String client_Url;
     @Autowired
     private JavaMailSender mailSender;
     public void resigterStudent(Student student)  {
@@ -90,19 +88,23 @@ public class StudentService {
         updateStd.setActiveKey(this.generateActiveKey());
         studentRepository.save(updateStd);
         this.sendEmail(updateStd,"Reset password","ResetPasswordEmail");
-
-
     }
     public  String generateRefreshToken(String email){
         return String.valueOf(UUID.nameUUIDFromBytes(email.getBytes()));
     }
-    public String login(Student loginRequest) {
+    public LoginResponse refreshAccessToken(String refreshToken){
+        Student student = studentRepository.findByRefreshToken(refreshToken)
+                .orElseThrow();
+        return new LoginResponse(jwtService.generateToken(student),student.getRefreshToken());
+
+    }
+    public LoginResponse login(Student loginRequest) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 loginRequest.getEmail(),
                 loginRequest.getPassword()
         ));
         var student = studentRepository.findByEmail(loginRequest.getEmail()).orElseThrow();
-        return jwtService.generateToken(student);
+        return new LoginResponse(jwtService.generateToken(student),student.getRefreshToken());
     }
     public Student getCurrentStudent() {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -179,6 +181,22 @@ public class StudentService {
                 .build();
     }
 
+    public StudentResponse setNewPassword(ChangePasswordRequest changePasswordRequest, String activeKey){
+        Student student = studentRepository.findByActiveKey(activeKey).orElseThrow();
+        if(validActiveKey(activeKey)){
+            student.setPassword(passwordEncoder.encode(changePasswordRequest.getPassword()));
+        }
+        studentRepository.save(student);
+        return StudentResponse.builder()
+                .id(student.getId())
+                .name(student.getStudent_name())
+                .email(student.getEmail())
+                .phoneNum(student.getPhoneNum())
+                .address(student.getAddress())
+                .avatar(student.getAvatar())
+                .build();
+
+    }
     public StudentResponse updateStudent(String name,MultipartFile fileAvt,String email,String address, String phoneNum ) throws IOException {
         Student student = this.getCurrentStudent();
         if(name != null){
@@ -194,8 +212,8 @@ public class StudentService {
             student.setPhoneNum(phoneNum);
         }
         if (fileAvt != null) {
-            fileAvt.transferTo(new File(uploadDir + fileAvt.getOriginalFilename()));
-            student.setAvatar(filesUrl + "/student/avatar/" + fileAvt.getOriginalFilename());
+            String linkAvatar = amazonS3Service.uploadFile(fileAvt);
+            student.setAvatar(linkAvatar);
 
         }
         studentRepository.save(student);
@@ -216,6 +234,7 @@ public class StudentService {
 
             Context context = new Context();
             context.setVariable("student", student);
+            context.setVariable("frontendHost",client_Url);
 
             String htmlContent = templateEngine.process(template, context);
             MimeMessage mimeMessage = mailSender.createMimeMessage();

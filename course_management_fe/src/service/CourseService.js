@@ -1,6 +1,5 @@
-import axios from 'axios';
-
-const COURSE_API_BASE_URL = "http://localhost:8080/api/v1/course";
+import axiosInstance from "./ConfigAxios";
+import { COURSE_API_BASE_URL } from "../constants";
 
 class CourseService {
     GetCourses() {
@@ -14,7 +13,7 @@ class CourseService {
             }
         };
 
-        return axios.request(config);
+        return axiosInstance.request(config);
     }
 }
 

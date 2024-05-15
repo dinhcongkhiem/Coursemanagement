@@ -4,24 +4,19 @@ package com.course.management.course_management.Controller;
 import com.course.management.course_management.Exception.StudentAlreadyExistsException;
 import com.course.management.course_management.Exception.StudentNotFoundException;
 import com.course.management.course_management.Model.Student;
+import com.course.management.course_management.Request.ChangePasswordRequest;
+import com.course.management.course_management.Request.RequestRefreshToken;
 import com.course.management.course_management.Request.ResetPasswordRequest;
 import com.course.management.course_management.Response.LoginResponse;
 import com.course.management.course_management.Service.StudentService;
 import jakarta.mail.MessagingException;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequiredArgsConstructor
@@ -49,11 +44,19 @@ public class RegistrationController {
         }
 
     }
-
+    @PostMapping("/setnewpassword")
+    public ResponseEntity<?> setNewPassword(@RequestBody ChangePasswordRequest changePasswordRequest, @RequestParam String activeKey){
+        return ResponseEntity.ok().body(studentService.setNewPassword(changePasswordRequest, activeKey));
+    }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody Student student){
-        return ResponseEntity.ok(new LoginResponse(studentService.login(student)));
+    public ResponseEntity<?> login(@RequestBody Student student){
+        try {
+            LoginResponse response = studentService.login(student);
+            return ResponseEntity.ok(response);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email or password is incorrect");
+        }
     }
 
 
@@ -64,6 +67,16 @@ public class RegistrationController {
                 ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("Your email verification time has passed, please click resend the email. We will send a new verification email to you!");
 
+    }
+
+    @PostMapping("/refresh_token")
+    public ResponseEntity<?> refreshJwtToken(@RequestBody RequestRefreshToken requestRefreshToken){
+        try {
+            LoginResponse response = studentService.refreshAccessToken(requestRefreshToken.getRefresh_token());
+            return ResponseEntity.ok(response);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error refreshing access token");
+        }
     }
 
 

@@ -46,7 +46,7 @@ function App() {
           } />
           <Route path="/profile/information" element={
             <PrivateRoute authenticated={isAuthenticated} setLoading={setLoading}>
-              <Profile />
+              <Profile  setLoading={setLoading}/>
             </PrivateRoute>
           } />
           <Route path="/profile/changepassword" element={

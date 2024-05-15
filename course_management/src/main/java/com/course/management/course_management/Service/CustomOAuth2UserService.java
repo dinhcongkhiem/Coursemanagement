@@ -10,6 +10,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -20,11 +21,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         OAuth2User user = super.loadUser(userRequest);
 
         Map<String, Object> attributes = user.getAttributes();
-        String userId = (String) attributes.get("sub");
         Student newStudent = Student
                 .builder()
                 .student_name((String) attributes.get("name"))
                 .email((String) attributes.get("email"))
+                .refreshToken(this.generateRefreshToken((String) attributes.get("email")))
+                .avatar((String) attributes.get("picture"))
                 .isEnabled(true)
                 .build();
         LoginOuth2(newStudent);
@@ -37,6 +39,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if(!sdt) {
             studentRepository.save(student);
         }
+    }
+
+    public  String generateRefreshToken(String email){
+        return String.valueOf(UUID.nameUUIDFromBytes(email.getBytes()));
     }
 
 }

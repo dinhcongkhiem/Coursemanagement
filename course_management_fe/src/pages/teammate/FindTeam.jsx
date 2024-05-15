@@ -4,12 +4,12 @@ import Navbar from '../navbar/Navbar';
 import StudentService from '../../service/StudentService';
 import ConnectionService from '../../service/ConnectionService';
 import { useSocket } from '../../context/SocketContext';
-export default function FindTeamMate({setLoading}) {
+export default function FindTeamMate({ setLoading }) {
     const [indexPopup, setIndexPopup] = useState(null);
     const [listCourse, setListCourse] = useState([]);
     const [listStudentInAllCourse, setListStudentInAllCourse] = useState([])
     const [listConnections, setListConnections] = useState([]);
-    const {getListStudentConnect} = useSocket();
+    const { getListStudentConnect } = useSocket();
 
     useEffect(() => {
         StudentService.getCourses()
@@ -21,8 +21,8 @@ export default function FindTeamMate({setLoading}) {
             .catch((err) => {
                 console.log(err);
             })
-            GetListConnection()
-            StudentService.getStudentsInCourse()
+        GetListConnection()
+        StudentService.getStudentsInCourse()
             .then((response) => {
                 if (response.status === 200) {
                     setListStudentInAllCourse(response.data);
@@ -30,26 +30,25 @@ export default function FindTeamMate({setLoading}) {
             })
             .catch((error) => {
                 console.log(error);
-            });    }, [])
+            });
+    }, [])
     const GetListConnection = () => {
         ConnectionService.getConnections()
-        .then((response) => {
-            if (response.status === 200) {
-                setListConnections(response.data);
-            }
-        })
-        .catch((err) => {
-            console.log(err);
-        })
+            .then((response) => {
+                if (response.status === 200) {
+                    setListConnections(response.data);
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            })
     }
     const HandleShowPopup = (index) => {
         listStudentInAllCourse[index].forEach(student => {
             if (listConnections.some(connection =>
                 (student.studentId === connection.receiverId || student.studentId === connection.senderId) && connection.connected)) {
-                console.log("connected");
                 student.isConnected = true
             } else if (listConnections.some(connection => student.studentId === connection.receiverId)) {
-                console.log("Sent");
                 student.isConnected = false
 
             }
@@ -60,23 +59,21 @@ export default function FindTeamMate({setLoading}) {
         setLoading(true)
         ConnectionService.createConnection(receiverId)
             .then((response) => {
-                if(response.status === 200){
+                if (response.status === 200) {
                     GetListConnection()
-                        listStudentInAllCourse[indexPopup].forEach(student => {
-                            if((student.studentId === response.data.sender.id) || (student.studentId === response.data.receiver.id)){
-                                if(response.data.connected){
-                                    getListStudentConnect()
-                                    console.log("true");
-                                    student.isConnected = true;
-                                }else{
-                                    student.isConnected = false;
-                                    console.log("false");
+                    listStudentInAllCourse[indexPopup].forEach(student => {
+                        if ((student.studentId === response.data.sender.id) || (student.studentId === response.data.receiver.id)) {
+                            if (response.data.connected) {
+                                getListStudentConnect()
+                                student.isConnected = true;
+                            } else {
+                                student.isConnected = false;
 
-                                }
                             }
-                            setLoading(false)
-                        });
-                    
+                        }
+                        setLoading(false)
+                    });
+
                 }
             })
             .catch((error) => {
@@ -95,7 +92,7 @@ export default function FindTeamMate({setLoading}) {
                     <p>You can find your teammate in here to learn together !!!</p>
                     <div className='find-team-container'>
                         <div className='list-group list-search'>
-                            {listCourse.slice(0, 5).map((data, index) => (
+                            {listCourse.map((data, index) => (
                                 <div className='list-courses position-relative d-flex align-items-center' key={index}>
                                     <button type="button" className="list-group-item list-group-item-action" onClick={() => HandleShowPopup(index, data.course.id)}>{data.course.name}</button>
                                     {(indexPopup === index) ? <i className="fa-solid fa-play arrow-icon"></i> : null}
@@ -117,11 +114,11 @@ export default function FindTeamMate({setLoading}) {
     )
 }
 
-const ListTeamMate = ({ show, listStudentInCourse, handleConnectStudent}) => {
+const ListTeamMate = ({ show, listStudentInCourse, handleConnectStudent }) => {
     if (!show) {
         return null;
     }
- 
+
     return (
         <>
             <div className=' align-items-center position-absolute z-1 list-team'>
@@ -131,7 +128,10 @@ const ListTeamMate = ({ show, listStudentInCourse, handleConnectStudent}) => {
                             <li className="list-group-item" key={index}>
                                 <div className='teammate-container'>
                                     <div className="d-flex align-items-center">
-                                        <img className='avt-image' src={data.avatar} alt="avt" />
+                                        <div className='img-around'>
+                                            <img className='avt-image' src={data.avatar} alt="avt" />
+
+                                        </div>
                                         <div className='infor-teammate'>
                                             <p className='name-std'>{data.studentName}</p>
                                             <p className='desire'>{data.note}</p>

@@ -1,7 +1,6 @@
+import axiosInstance from './ConfigAxios';
+import { AUTH_API_BASE_URL,STUDENT_API_BASE_URL } from '../constants';
 import axios from 'axios';
-
-const AUTH_API_BASE_URL = "http://localhost:8080/api/v1/auth";
-const STUDENT_API_BASE_URL = "http://localhost:8080/api/v1/student"
 const JwtToken = localStorage.getItem('accessToken')
 
 class Student {
@@ -12,7 +11,7 @@ class Student {
             maxBodyLength: Infinity,
             url: `${AUTH_API_BASE_URL}/verify?activeKey=${activeKey}`,
         };
-        return axios.request(config)
+        return axiosInstance.request(config)
 
     }
     SendPasswordResetEmail(email){
@@ -30,9 +29,26 @@ class Student {
             data : data
           };
           
-          return axios.request(config)
-        
+          return axiosInstance.request(config)  
+    }
+    setNewPassword(activeKey, password, confirmPassword){
+        let data = {
+            "password": password,
+            "confirmPassword": confirmPassword
+          }
           
+          let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url:  AUTH_API_BASE_URL + '/setnewpassword?activeKey=' + activeKey,
+            headers: { 
+              'Content-Type': 'application/json'
+            },
+            data : data
+          };
+          
+          return axiosInstance.request(config)     
+
     }
     Register(fullname, email, password, location) {
         let data = {
@@ -41,7 +57,6 @@ class Student {
             "password": password,
             "address": location,
             "phoneNum": "",
-            "avatar": "https://fullstack.edu.vn/static/media/fallback-avatar.155cdb2376c5d99ea151.jpg"
         };
 
         let config = {
@@ -62,7 +77,6 @@ class Student {
             "email": username,
             "password": password
         });
-
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
@@ -88,7 +102,7 @@ class Student {
             },
         };
 
-        return axios.request(config)
+        return axiosInstance.request(config)
 
     }
     insertCourse(data) {
@@ -105,7 +119,7 @@ class Student {
             data: data
         };
 
-        return axios.request(config)
+        return axiosInstance.request(config)
 
     }
     getCourses() {
@@ -118,7 +132,7 @@ class Student {
             }
         };
 
-        return axios.request(config)
+        return axiosInstance.request(config)
 
     }
     updateCourse(data) {
@@ -133,7 +147,7 @@ class Student {
             data: data
         };
 
-        return axios.request(config)
+        return axiosInstance.request(config)
 
     }
 
@@ -147,7 +161,7 @@ class Student {
             }
         };
 
-        return axios.request(config)
+        return axiosInstance.request(config)
 
 
     }
@@ -162,7 +176,7 @@ class Student {
             }
         };
 
-        return axios.request(config)
+        return axiosInstance.request(config)
     }
 
     updateStudent(formData) {
@@ -177,7 +191,7 @@ class Student {
             data: formData
         };
 
-        return axios.request(config)
+        return axiosInstance.request(config)
     }
 
     GetOTPtoAuthen() {
@@ -190,7 +204,7 @@ class Student {
             }
         };
 
-        return axios.request(config)
+        return axiosInstance.request(config)
     }
 
     changePassword(otp, password, confirmPassword) {
@@ -210,7 +224,7 @@ class Student {
             data: data
         };
 
-        return axios.request(config)
+        return axiosInstance.request(config)
 
     }
 }

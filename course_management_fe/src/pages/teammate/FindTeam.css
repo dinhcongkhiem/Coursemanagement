@@ -34,6 +34,8 @@
     height: 45px;
     margin-left: 5px;
     margin-right: 15px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 .teammate-container .name-std{
     font-size: 18px;

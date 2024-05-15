@@ -1,27 +1,25 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import CourseService from '../../service/CourseService'
 import './insert.css'
 export default function Insert({ show, onClose, handleInsert, setCourseInsert, courseInsert }) {
 
-    const [JwtToken, setJwtToken] = useState(localStorage.getItem('accessToken'));
 
     const [productArrSearch, setproductArrSearch] = useState([])
     const [productArr, setproductArr] = useState([])
 
     useEffect(() => {
-            CourseService.GetCourses()
+        CourseService.GetCourses()
             .then((response) => {
                 if (response.status === 200) {
                     setproductArr(response.data)
                     setproductArrSearch(response.data)
                 }
             })
-        
-       
+
+
     }, [])
     const onChangeHandle = (e) => {
-        const regex = new RegExp(e.target.value, 'i'); 
+        const regex = new RegExp(e.target.value, 'i');
         if (e.target.value === '') {
             setproductArrSearch(productArr)
         } else {
@@ -73,9 +71,12 @@ export default function Insert({ show, onClose, handleInsert, setCourseInsert, c
                     </div>
                 </div>
                 <div className='list-group list-search'>
-                    {productArrSearch.slice(0, 5).map((data, index) => (
-                        <div className='search-result' key={index}>
-                            <button type="button" className="list-group-item list-group-item-action" onClick={() => handleClick(index, data.id)}>{data.name}</button>
+                    {productArrSearch.map((data, index) => (
+                        <>
+                            <div className='search-result' key={index}>
+                                <button type="button" className="list-group-item list-group-item-action" onClick={() => handleClick(index, data.id)}>{data.name}</button>
+
+                            </div>
                             <PopupInsert
                                 key={index}
                                 show={currentPopup === index}
@@ -85,7 +86,8 @@ export default function Insert({ show, onClose, handleInsert, setCourseInsert, c
                                 handleSubmit={handleInsertCourse}
 
                             />
-                        </div>
+                        </>
+
                     ))}
                 </div>
 

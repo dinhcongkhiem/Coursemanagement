@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { ACCESS_TOKEN } from '../../constants';
+import { ACCESS_TOKEN, REFRESH_TOKEN } from '../../constants';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function OAuth2RedirectHandler({setAuthenticated}) {
@@ -14,9 +14,11 @@ export default function OAuth2RedirectHandler({setAuthenticated}) {
             return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
         };
         const token = GetUrlParameter('token');
+        const refreshToken = GetUrlParameter('refreshToken')
         const error = GetUrlParameter('error');
-        if(token) {
+        if(token && refreshToken) {
             localStorage.setItem(ACCESS_TOKEN, token);
+            localStorage.setItem(REFRESH_TOKEN, refreshToken)
             setAuthenticated((prev) => ({
                 ...prev,
                 isLogin: true

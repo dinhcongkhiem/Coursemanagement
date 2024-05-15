@@ -1,7 +1,6 @@
 import axios from 'axios';
-
-const AUTH_API_BASE_URL = "http://localhost:8080/api/v1/auth";
-const STUDENT_API_BASE_URL = "http://localhost:8080/api/v1/student";
+import { ACCESS_TOKEN } from '../constants';
+import { AUTH_API_BASE_URL } from '../constants';
 let isRefreshing = false;
 let refreshSubscribers = [];
 
@@ -13,8 +12,8 @@ async function refreshToken() {
         const refreshResponse = await axios.post(AUTH_API_BASE_URL + '/refresh_token', {
             refresh_token: localStorage.getItem('refreshToken')
         });
-        const newAccessToken = refreshResponse.data.access_token;
-        localStorage.setItem('accessToken', newAccessToken);
+        const newAccessToken = refreshResponse.data.accessToken;
+        localStorage.setItem(ACCESS_TOKEN, newAccessToken);
         return newAccessToken;
     } catch (error) {
         throw error;

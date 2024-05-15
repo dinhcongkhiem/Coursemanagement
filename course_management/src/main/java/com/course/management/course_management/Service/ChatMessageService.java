@@ -33,7 +33,7 @@ public class ChatMessageService {
 
     public List<ChatMessage> findChatMessages(Long connectionId, Date timestamp) {
         List<ChatMessage> listChatmesage = chatMessageRepository.findByConnectionIdAndLessThanCreateAt(connectionId, timestamp,
-                PageRequest.of(0, 15, Sort.by(Sort.Direction.DESC, "createAt")));
+                PageRequest.of(0, 25, Sort.by(Sort.Direction.DESC, "createAt")));
         Collections.reverse(listChatmesage);
         return listChatmesage;
     }

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import image from '../../assets/image/1280px-RMIT_University_Logo.svg.png';
 import './Header.css'
 import { Link, Outlet } from 'react-router-dom'
+import { ACCESS_TOKEN, REFRESH_TOKEN } from '../../constants';
 
 export default function Header({setAuthenticated, isLogin}) {
     const [isShowProfileMenu, setIsShowProfileMenu] = useState(false);
@@ -23,7 +24,8 @@ export default function Header({setAuthenticated, isLogin}) {
 
 
     const HanderLogout = () => {
-        localStorage.removeItem('accessToken');
+        localStorage.removeItem(ACCESS_TOKEN);
+        localStorage.removeItem(REFRESH_TOKEN)
         setAuthenticated(false);
     }
     return (

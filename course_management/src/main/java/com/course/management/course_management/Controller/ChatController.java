@@ -17,6 +17,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 @Controller
 @AllArgsConstructor
@@ -39,10 +40,7 @@ public class ChatController {
 
     @MessageMapping("/chat")
     public void processMessage(@Payload ChatMessage chatMessage) throws Exception {
-        System.out.println(chatMessage);
         ChatMessage savedMsg = chatMessageService.save(chatMessage);
-        System.out.println(chatMessage.getRecipientId());
-
         messagingTemplate.convertAndSendToUser(
                 String.valueOf(chatMessage.getRecipientId()), "/queue/messages",
                 savedMsg
@@ -50,7 +48,6 @@ public class ChatController {
     }
     @GetMapping("/messages")
     public ResponseEntity<?> findAllChatMessages(@RequestParam String timestamp) {
-        System.out.println(timestamp);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
         try {
             Date date = dateFormat.parse(timestamp);
@@ -61,11 +58,17 @@ public class ChatController {
             return null;
         }
     }
-//    @GetMapping("/messages/{connectionId}")
-//    public ResponseEntity<?> findChatMessages(@PathVariable Long connectionId,@RequestBody findChatMessageRequest timestamp) {
-//        return ResponseEntity.ok(chatMessageService.findChatMessages(connectionId, timestamp));
-//    }
 
+    @GetMapping("/message/{connectionId}")
+    public ResponseEntity<?> findOldMessages(@PathVariable Long connectionId ,@RequestParam String timestamp) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        try {
+            Date date = dateFormat.parse(timestamp);
+            return ResponseEntity.ok(chatMessageService.findChatMessages(connectionId, date));
 
-
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

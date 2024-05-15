@@ -55,7 +55,6 @@ export default function ChangePassword({ setLoading }) {
                     if (response.status === 200) {
                         setLoading(false)
                         setShow(!show)
-                        console.log(JSON.stringify(response.data));
 
                     }
                 })
@@ -81,7 +80,8 @@ export default function ChangePassword({ setLoading }) {
                 }
             })
             .catch((error) => {
-                console.log(error);
+                toast("OTP is incorrect", { hideProgressBar: true })
+
             });
     }
 
@@ -99,7 +99,7 @@ export default function ChangePassword({ setLoading }) {
                                 value={password} onChange={newText => setPassword(newText.target.value)} />
                             {err.errPassword && <span className='errMessage'>Please input new password</span>}
                             {err.errPassword && <span className='warning-icon'><i class="fa-solid fa-triangle-exclamation"></i></span>}
-                            
+
 
 
                         </div>
@@ -125,19 +125,31 @@ export default function ChangePassword({ setLoading }) {
                 <div className='infor-action change-p-btn'>
                     <button onClick={handleChangePasswordRequest}>Update password</button>
                 </div>
-                <VerifyOTP show={show} onClose={() => setShow(false)} handlechangePassword={handlechangePassword} />
+                <VerifyOTP show={show} onClose={() => setShow(false)} 
+                handlechangePassword={handlechangePassword} handleChangePasswordRequest={handleChangePasswordRequest} setLoading={setLoading} />
             </div>
 
         </div>
     )
 }
 
-function VerifyOTP({ show, onClose, handlechangePassword }) {
+function VerifyOTP({ show, onClose, handlechangePassword, setLoading}) {
     const [input, setInputOtp] = useState('')
     const handleClick = () => {
         handlechangePassword(input);
     }
-
+    const handleChangePasswordRequest = () => {
+        setLoading(true)
+        StudentService.GetOTPtoAuthen()
+            .then((response) => {
+                if (response.status === 200) {
+                    setLoading(false)
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
     return (
         show && <div className='verify-otp-container' onClick={onClose}>
 
@@ -147,7 +159,11 @@ function VerifyOTP({ show, onClose, handlechangePassword }) {
                     <button style={{ float: 'right', fontSize: '18px' }} className='close-btn' onClick={onClose}><i className="fa-solid fa-xmark"></i></button>
                 </div>
                 <div>
-                    <p className='discription'>We have just sent an OTP to your email please enter it to continue! <a href='/#'>Resend email</a></p>
+                    <p className='discription'>We have just sent an OTP to your email please enter it to continue!
+                        <span style={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer'}} onClick={handleChangePasswordRequest}>
+                            Resend email
+                        </span>
+                    </p>
 
                 </div>
                 <div className='row input-otp'>

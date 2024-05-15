@@ -2,48 +2,73 @@ import Navbar from "../navbar/Navbar"
 import './message.css'
 import img from '../../assets/image/message.png'
 import { useEffect, useRef, useState } from "react";
-import StudentService from "../../service/StudentService";
 import { useSocket } from "../../context/SocketContext";
-import ConnectionService from "../../service/ConnectionService";
-var stompClient = null;
+import LoadingOldMessage from "./LoadingOldMessage";
+import MessageService from "../../service/MessageService";
 export default function Message() {
     const [message, setMessage] = useState('');
     const chatContainerRef = useRef(null);
+    const prevContainerRef = useRef(null);
     const [listLastestMessage, setListLastestMessage] = useState([]);
-    const { sendMessage, studentInfor, listStudentConnected, activeChatroom, setActiveChatroom, listMessageInAllChatroom } = useSocket();
+    const [isLoading, setIsLoading] = useState(false);
+    const { sendMessage, studentInfor, listStudentConnected, activeChatroom,
+        setActiveChatroom, listMessageInAllChatroom, setListMessageInAllChatroom } = useSocket();
     useEffect(() => {
-        if (chatContainerRef.current) {
-            const element = chatContainerRef.current;
-            element.scrollTop = element.scrollHeight;
-        }
         if (listMessageInAllChatroom) {
             const updatedList = listMessageInAllChatroom.map(element => {
                 return element.listChatMessage[element.listChatMessage.length - 1];
             });
             setListLastestMessage(updatedList);
         }
+        if (chatContainerRef.current && prevContainerRef.current) {
+            const element = chatContainerRef.current;
+            chatContainerRef.current.style.scrollBehavior = 'auto';
+            element.scrollTop = chatContainerRef.current.scrollHeight - prevContainerRef.current;
+            prevContainerRef.current = null;
+        }else{
+            const element = chatContainerRef.current;
+            element.scrollTop = chatContainerRef.current.scrollHeight;
+            chatContainerRef.current.style.scrollBehavior = 'auto';
 
+        }
     }, [listMessageInAllChatroom]);
+
     const handleScroll = (e) => {
-        const { scrollTop, clientHeight, scrollHeight } = e.target;
-        if (scrollTop === 0) {
-            console.log('Đã cuộn lên trên!');
+        const { scrollTop } = e.target;
+
+        if (scrollTop === 0 && listLastestMessage[activeChatroom]) {
+            setIsLoading(true)
+            prevContainerRef.current = chatContainerRef.current.scrollHeight;
+            MessageService.GetOldMessage(listMessageInAllChatroom[activeChatroom]?.connectionId, listMessageInAllChatroom[activeChatroom]?.listChatMessage[0].createAt)
+                .then((response) => {
+                    if (response.data.length > 1) {
+                        const updatedData = [...listMessageInAllChatroom];
+                        updatedData[activeChatroom].listChatMessage = [...response.data, ...updatedData[activeChatroom].listChatMessage];
+                        setListMessageInAllChatroom(updatedData)
+                    }else{
+                        prevContainerRef.current = null;
+                    }
+                    setIsLoading(false)
+                })
+                .catch((error) => {
+                    console.log(error);
+                    setIsLoading(false)
+
+                });
         }
     }
 
 
-    const handleSendMessage = () => {
-        if (listLastestMessage.length !== 0) {
-            console.log(activeChatroom);
+    const handleSendMessage = (e) => {
+        e.preventDefault();
+        chatContainerRef.current.style.scrollBehavior = "smooth"
+        if (listLastestMessage.length !== 0 && message.trim().length !== 0) {
             sendMessage(message)
             setMessage("");
         }
-
-
     }
     const handleChangeChatroom = (index) => {
         localStorage.setItem('activeChatroom', index);
-        console.log(listLastestMessage);
         setActiveChatroom(index)
     }
 
@@ -87,11 +112,11 @@ export default function Message() {
                                 <p>{student.name}</p>
                             </div>
                             <div className="prev-message">
-                                <p>
+                                {listLastestMessage[index]?.content ?  <p>
                                     <span>{listLastestMessage[index]?.senderId === studentInfor.id ? 'You' : student.name}: </span>
                                     <span>{listLastestMessage[index]?.content}</span> - <span>{calculateTimeString(listLastestMessage[index]?.createAt)}</span>
-                                </p>
-                                <p>You: hello friends - 7m</p>
+                                </p> : <p>Send message</p>}
+                               
                             </div>
                         </div>
                     </div>
@@ -107,6 +132,9 @@ export default function Message() {
             </div>
             <div className="chat-container">
                 <div className="header-chat"></div>
+                <div className="content-block">
+
+                </div>
                 <div className="content-chat" ref={chatContainerRef} onScroll={handleScroll}>
                     {listMessageInAllChatroom[activeChatroom]?.listChatMessage.map((message, index) => (
                         <div className={`message-block ${message.senderId === studentInfor.id ? 'flex-row-reverse' : ''}`} key={index}>
@@ -119,14 +147,20 @@ export default function Message() {
                             </div>
                         </div>
                     ))}
+                    <LoadingOldMessage isLoading={isLoading} />
+
                 </div>
 
                 <div className="input-chat">
-                    <input type="text" name="" id="" value={message} onChange={(e) => { setMessage(e.target.value) }} />
-                    <div>
-                        <button onClick={() => handleSendMessage()}><img src={img} alt="" /></button>
-                    </div>
+                    <form action="">
+                        <input type="text" name="" id="" value={message} onChange={(e) => { setMessage(e.target.value) }} />
+                        <div>
+                            <button onClick={(e) => handleSendMessage(e)}><img src={img} alt="" /></button>
+                        </div>
+                    </form>
+
                 </div>
+
             </div>
         </div>
     )

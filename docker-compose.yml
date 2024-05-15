@@ -1,0 +1,70 @@
+version: '3'
+
+networks:
+  backend:
+  network:
+
+services:
+  db:
+    image: postgres:16.2-alpine
+    container_name: course_manage_db
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=khiem2004
+      - POSTGRES_DB=mng_students
+      - TZ=UTC
+    ports:
+      - '5432:5432'
+    volumes: 
+      - ./db/postgresql:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  app:
+    build: 
+      context: /course_management
+      dockerfile: Dockerfile
+    container_name: course_manage_backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/mng_students
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=khiem2004
+
+      - REACT_HOST=http://localhost
+
+      - OAUTH2_GOOGLE_CLIENT_ID=
+      - OAUTH2_GOOGLE_CLIENT_SECRET=
+
+      - SMTP_USERNAME=khiemcongdinh@gmail.com
+      - SMTP_PASSWORD=uxaq emkl eyiu qovb
+
+      - AWS_ACCESS_KEY_ID=
+      - AWS_SECRET_ACCESS_KEY=
+      - AWS_REGION=ap-southeast-1
+      - AWS_BUCKET_NAME=
+
+      - AVATAR_USER_DEFAULT_URL=
+    networks:
+      - backend
+      - network
+  nginx:
+    build:
+      context: /course_management_fe
+      dockerfile: Dockerfile
+    container_name: course_manage_frontend
+
+    ports:
+     - "80:80"
+    depends_on:
+      - app
+    networks:
+      - network
+   
+    
+   
+

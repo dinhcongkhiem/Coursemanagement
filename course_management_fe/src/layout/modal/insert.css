@@ -1,6 +1,6 @@
 .insert-modal{
     background-color: rgba(0, 0, 0, .3);
-    position: absolute;
+    position: fixed;
     right: 0;
     top: 0;
     bottom: 0;
@@ -24,13 +24,12 @@
 
 .insert-modal .list-search {
     list-style-type: none;
-    background-color: gray;
     width: 500px;
     margin: 30px;
+    overflow-y: scroll;
+    height: 215px;
 }
-.insert-modal .search-result{
-    position: relative;
-}
+
 .insert-modal .search-result button{
     transition: transform 0.3s ease;
 }
@@ -48,14 +47,13 @@
 
 .popup{
     position: absolute;
-    z-index: 1;
+    z-index: 4;
     font-size: 12px;
     background-color: #fff !important;
     border: 1px solid rgba(0, 0, 0, 0.35);
-    padding: 24px;
+    padding: 24px 34px;
     border-radius: 5px;
     animation: modalFadeIn ease .3s;
-    width: 100%;
 }
 
 .popup input{

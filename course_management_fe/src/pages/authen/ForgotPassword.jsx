@@ -36,7 +36,6 @@ export default function ForgotPassword({ setAuthenticated, setLoading }) {
             }))
         }
 
-        console.log("Hello");
         if (username) {
             setLoading(true)
             StudentService.SendPasswordResetEmail(username)
@@ -46,6 +45,7 @@ export default function ForgotPassword({ setAuthenticated, setLoading }) {
                         toast("Please to check your email to reset password", {
                             position: "top-center",
                         });
+                        
                     }
                 }).catch((err) => {
                     console.log(err);

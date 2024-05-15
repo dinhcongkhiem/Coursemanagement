@@ -18,14 +18,14 @@ export default function Login({ setAuthenticated, setLoading }) {
     const [isErr, setIsErr] = useState(
         {
             emailErr: false,
-            passwordErr: false,  
+            passwordErr: false,
         }
     )
     const images = [
         imgslide,
         imgslide2
     ];
-    
+
     const handleLogin = (e) => {
         e.preventDefault()
         if (username.length === 0) {
@@ -33,7 +33,7 @@ export default function Login({ setAuthenticated, setLoading }) {
                 ...prev,
                 emailErr: true
             }))
-        }else{
+        } else {
             setIsErr((prev) => ({
                 ...prev,
                 emailErr: false
@@ -45,7 +45,7 @@ export default function Login({ setAuthenticated, setLoading }) {
                 ...prev,
                 passwordErr: true
             }))
-        }else{
+        } else {
             setIsErr((prev) => ({
                 ...prev,
                 passwordErr: false
@@ -65,7 +65,7 @@ export default function Login({ setAuthenticated, setLoading }) {
                     }
                 }).catch((err) => {
                     console.log(err);
-                    toast.warn("Your username or account is incorrect",{
+                    toast.warn("Your username or account is incorrect", {
                         position: "top-center",
                     });
                     setLoading(false);
@@ -88,13 +88,13 @@ export default function Login({ setAuthenticated, setLoading }) {
 
                             <div className="mb-3 input-block">
                                 <label htmlFor="email" className="form-label">Email</label>
-                                <input type="email" className="form-control" id="email" placeholder="Email" onChange={(e) => {setUsername(e.target.value)}}/>
+                                <input type="email" className="form-control" id="email" placeholder="Email" onChange={(e) => { setUsername(e.target.value) }} />
                                 {isErr.emailErr && <span className='errMessage' style={{ left: '5px' }}>Please input email</span>}
                                 {isErr.emailErr && <span className='warning-icon' style={{ right: '8px' }}><i className="fa-solid fa-triangle-exclamation"></i></span>}
                             </div>
                             <div className="mb-3 input-block">
                                 <label htmlFor="password" className="form-label">Password</label>
-                                <input type="password" className="form-control" id="password" placeholder="Password" onChange={(e) => {setPassword(e.target.value)}}/>
+                                <input type="password" className="form-control" id="password" placeholder="Password" onChange={(e) => { setPassword(e.target.value) }} />
                                 {isErr.passwordErr && <span className='errMessage' style={{ left: '5px' }}>Please input password</span>}
                                 {isErr.passwordErr && <span className='warning-icon' style={{ right: '8px' }}><i className="fa-solid fa-triangle-exclamation"></i></span>}
                             </div>
@@ -121,9 +121,8 @@ export default function Login({ setAuthenticated, setLoading }) {
                     <div className="row wrap-btn">
                         <a href={GOOGLE_AUTH_URL} type="submit" value="Submit" className='btn'>
                             <i className="fa-brands fa-google"></i>
-                            Google</a>
-
-
+                            Google
+                        </a>
                     </div>
                 </div>
                 <div className='slider'>

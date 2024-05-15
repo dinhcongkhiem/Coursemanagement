@@ -4,6 +4,7 @@ import SockJS from "sockjs-client";
 import StudentService from '../service/StudentService';
 import ConnectionService from '../service/ConnectionService';
 import MessageService from '../service/MessageService';
+import { WEBSOCKET_URL } from '../constants';
 const SocketContext = createContext();
 
 export const useSocket = () => useContext(SocketContext);
@@ -51,8 +52,9 @@ export const SocketProvider = ({ children }) => {
             });
     }
     const connect = async (StudentId) => {
-        const sockJSFactory = () => new SockJS('http://localhost:8080/ws');
+        const sockJSFactory = () => new SockJS(WEBSOCKET_URL);
         const client = Stomp.over(sockJSFactory);
+        client.debug = () => {};
         client.connect({}, () => onConnected(client, StudentId), onError);
         setStompClient(client);
 
@@ -71,7 +73,6 @@ export const SocketProvider = ({ children }) => {
 
     const onMessageReceived = async (payload) => {
         const ReceivedMessage = JSON.parse(payload.body)
-        console.log(ReceivedMessage);
         setListMessageInAllChatroom(prev => {
             return prev.map(element => {
                 if (element.connectionId === ReceivedMessage.connectionId) {
@@ -113,7 +114,7 @@ export const SocketProvider = ({ children }) => {
             value={{
                 sendMessage, listStudentConnected,
                 studentInfor, setActiveChatroom, activeChatroom,
-                listMessageInAllChatroom, getListStudentConnect
+                listMessageInAllChatroom, getListStudentConnect, setListMessageInAllChatroom
             }}>
             {children}
         </SocketContext.Provider>

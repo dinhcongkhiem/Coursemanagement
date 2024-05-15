@@ -9,8 +9,9 @@
 .home-container{
     animation: OpacityAnimation ease .3s;
     width: 100%;
-    flex-grow: 1; /* Container sẽ mở rộng để lấp đầy không gian còn trống trong parent */
-    overflow: auto; /* Cho phép container cuộn nếu nội dung vượt quá kích thước của parent */
+    flex-grow: 1;
+    height: 100vh;
+    overflow: auto;
 }
 .home-container .action-course{
     display: flex;

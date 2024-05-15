@@ -8,7 +8,7 @@
 <h1>Dear , <span th:text="${student1.student_name}"></span></h1>
 
 <p>Congratulations! You have successfully connected with <span th:text="${student2.student_name}"/> through Courses management.</p>
-<p>Please log in to the <a href="http://localhost:3000/message">app</a> to start chatting and exchanging with each other.</p>
+<p>Please log in to the <a th:href="${frontendHost} + '/message' ">app</a> to start chatting and exchanging with each other.</p>
 <p>Wishing you both exciting and fruitful interactions!</p>
 <p>Best regards,</p>
 

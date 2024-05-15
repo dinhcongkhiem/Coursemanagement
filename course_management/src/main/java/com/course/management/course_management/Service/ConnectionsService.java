@@ -7,11 +7,11 @@ import com.course.management.course_management.Repository.StudentRepository;
 import com.course.management.course_management.Request.ConnectionsRequest;
 import com.course.management.course_management.Response.ConnectionResponse;
 import com.course.management.course_management.Response.StudentInConnectResponse;
-import com.course.management.course_management.Response.StudentResponse;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ConnectionsService {
     private final ConnectionsRepository connectionsRepository;
     private final StudentService studentService;
@@ -32,6 +32,9 @@ public class ConnectionsService {
     private final TemplateEngine templateEngine;
     @Autowired
     private JavaMailSender mailSender;
+    @Value("${client.url}")
+    private String client_Url;
+
 
     public Connections createConnection(ConnectionsRequest request) {
         Student currentStudent = studentService.getCurrentStudent();
@@ -97,6 +100,8 @@ public class ConnectionsService {
             Context context = new Context();
             context.setVariable("student1", currentStudent);
             context.setVariable("student2", student);
+            context.setVariable("frontendHost",client_Url);
+
 
             String htmlContent = templateEngine.process("ConnectSuccess", context);
             MimeMessage mimeMessage = mailSender.createMimeMessage();

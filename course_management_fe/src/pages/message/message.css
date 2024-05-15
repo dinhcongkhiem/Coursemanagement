@@ -44,10 +44,15 @@
 
 
 }
-
+.chat-room .contact-name  {
+    max-width: 189px;
+    overflow: hidden;
+}
 .chat-room .contact-name p {
     font-size: 18px;
     font-weight: 500;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .chat-room .prev-message p {
@@ -79,7 +84,7 @@
     flex: 1 1;
 }
 
-.chat-container .input-chat {
+.chat-container .input-chat form{
     display: flex;
     padding: 10px 15px
 }

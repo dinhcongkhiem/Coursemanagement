@@ -1,6 +1,6 @@
-import axios from 'axios';
+import axiosInstance from "./ConfigAxios";
 
-const CONNECTION_API_BASE_URL = 'http://localhost:8080/api/v1/connection'
+import { CONNECTION_API_BASE_URL } from "../constants";
 const JwtToken = localStorage.getItem('accessToken')
 
 class ConnectionService {
@@ -20,7 +20,7 @@ class ConnectionService {
       data : data
     };
     
-    return axios.request(config)
+    return axiosInstance.request(config)
   
   }
 
@@ -36,7 +36,7 @@ class ConnectionService {
       },
     };
 
-    return axios.request(config)
+    return axiosInstance.request(config)
   }
   getConnections() {
     let config = {
@@ -48,7 +48,7 @@ class ConnectionService {
         'Authorization': 'Bearer ' + JwtToken
       },
     };
-    return axios.request(config)
+    return axiosInstance.request(config)
       
 
   }

@@ -10,10 +10,8 @@ import { confirmAlert } from 'react-confirm-alert';
 import ConfirmModal from '../../layout/modal/ConfirmModal';
 import 'react-confirm-alert/src/react-confirm-alert.css'; 
 export default function Home({ setLoading }) {
-    const location = useLocation();
 
     const [showPopup, setShowPopup] = useState(false);
-    const [showPopupUpdate, setShowPopupUpdate] = useState(false);
     const [currentPopup, setCurrentPopup] = useState(null);
     const [listCourse, setListCourse] = useState([])
     const [course, setCourse] = useState({});

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import ProfileNav from './ProfileNavConponent'
 import StudentService from '../../service/StudentService'
 import { toast } from 'react-toastify';
-export default function Profile() {
+export default function Profile({ setLoading }) {
     const [avatar, setAvatar] = useState('');
     const [oldStudent, setOldStudent] = useState({
         name: "",
@@ -32,7 +32,6 @@ export default function Profile() {
         SetIsEdit(updatedIsEdit);
         SetIsErr([false, false, false, false, false])
         setStudent(oldStudent);
-        setAvatar(null)
     }
 
     useEffect(() => {
@@ -46,52 +45,57 @@ export default function Profile() {
             .catch((error) => {
                 console.log(error);
             });
+
+    }, [])
+
+    useEffect(() => {
         return () => {
             avatar && URL.revokeObjectURL(avatar)
         }
     }, [avatar])
+    const handleSaveClick = (index) => {
+        if (student[indexToKey[index]] === '') {
+            const updatedIsErr = [...isEdit];
+            updatedIsErr[index] = true;
+            SetIsErr(updatedIsErr);
+        } else if (oldStudent[indexToKey[index]] !== student[indexToKey[index]]) {
+            setLoading(true)
 
+            formData.append(indexToKey[index], student[indexToKey[index]])
+            StudentService.updateStudent(formData)
+                .then((response) => {
+                    if (response.status === 200) {
+                        setStudent(response.data)
+                        setOldStudent(response.data)
+                        toast("Update successfully!", { hideProgressBar: true })
+                        setLoading(false)
+                    }
+                })
+        }
+        handleClick(index)
+
+    }
+    const handleChangeAvt = (e) => {
+        if (e.target.files && e.target.files[0]) {
+            setAvatar(URL.createObjectURL(e.target.files[0]))
+            const updateStudent = { ...student };
+            updateStudent.avatar = e.target.files[0];
+            setStudent(updateStudent)
+
+        }
+    };
     const handleOnChange = (e, index) => {
         const updateStudent = { ...student };
         updateStudent[indexToKey[index]] = e.target.value;
-        if(e.target.value.length > 0){
+        if (e.target.value.length > 0) {
             SetIsErr([false, false, false, false, false])
         }
         setStudent(updateStudent)
     }
 
-    const handleChangeAvt = (e) => {
-        if (e.target.files && e.target.files[0]) {
-            setAvatar(URL.createObjectURL(e.target.files[0]))
-            const updateStudent = { ...student };
-            updateStudent["avatar"] = e.target.files[0];
-            setStudent(updateStudent)
 
-        }
-    };
 
-    const handleSaveClick = (index) => {
-        if(student[indexToKey[index]] === ''){
-            const updatedIsErr = [...isEdit];
-            updatedIsErr[index] = true;
-            SetIsErr(updatedIsErr);
-        }else if (oldStudent[indexToKey[index]] !== student[indexToKey[index]]) {
-                formData.append(indexToKey[index], student[indexToKey[index]])
-                StudentService.updateStudent(formData)
-                    .then((response) => {
-                        if (response.status === 200) {
-                            setStudent(response.data)
-                            setOldStudent(response.data)
-                            toast("Update successfully!", { hideProgressBar: true })
-    
-                        }
-                    })
-                    handleClick(index)
-    
-            }
-        
-        
-    }
+
 
     return student && (
         <div className="profile-container">
@@ -142,10 +146,10 @@ export default function Profile() {
                         <h5 style={{ fontSize: '1.1em' }}>Full name</h5>
                         <div>
                             <input disabled={!isEdit[1]} type="text" name="full_name" className={isErr[1] ? 'err' : null}
-                             maxLength="50" placeholder="Input your full name" onChange={(event) => handleOnChange(event, 1)} value={student.name} />
-                            {isErr[1] && <span className='errMessage' style={{top: '90px'}}>Please input full name</span>}
-                            {isErr[1] && <span className='warning-icon' style={{top: '65px'}}><i class="fa-solid fa-triangle-exclamation"></i></span>}
-                            
+                                maxLength="50" placeholder="Input your full name" onChange={(event) => handleOnChange(event, 1)} value={student.name} />
+                            {isErr[1] && <span className='errMessage' style={{ top: '90px' }}>Please input full name</span>}
+                            {isErr[1] && <span className='warning-icon' style={{ top: '65px' }}><i class="fa-solid fa-triangle-exclamation"></i></span>}
+
                         </div>
                     </div>
                     <div className='infor-action'>
@@ -164,9 +168,9 @@ export default function Profile() {
                         <h5 style={{ fontSize: '1.1em' }}>Email</h5>
                         <div>
                             <input disabled={!isEdit[2]} type="text" name="full_name" maxLength="50" className={isErr[2] ? 'err' : null}
-                            placeholder="Input your email" onChange={(event) => handleOnChange(event, 2)} value={student.email} />
-                            {isErr[2] && <span className='errMessage' style={{top: '90px'}}>Please input email</span>}
-                            {isErr[2] && <span className='warning-icon' style={{top: '65px'}}><i class="fa-solid fa-triangle-exclamation"></i></span>}
+                                placeholder="Input your email" onChange={(event) => handleOnChange(event, 2)} value={student.email} />
+                            {isErr[2] && <span className='errMessage' style={{ top: '90px' }}>Please input email</span>}
+                            {isErr[2] && <span className='warning-icon' style={{ top: '65px' }}><i class="fa-solid fa-triangle-exclamation"></i></span>}
                         </div>
                     </div>
                     <div className='infor-action'>
@@ -185,9 +189,9 @@ export default function Profile() {
                         <h5 style={{ fontSize: '1.1em' }}>Address</h5>
                         <div>
                             <input disabled={!isEdit[3]} type="text" name="full_name" className={isErr[3] ? 'err' : null}
-                             maxLength="50" placeholder="Input your address" onChange={(event) => handleOnChange(event, 3)} value={student.address} />
-                            {isErr[3] && <span className='errMessage' style={{top: '90px'}}>Please input address</span>}
-                            {isErr[3] && <span className='warning-icon' style={{top: '65px'}}><i class="fa-solid fa-triangle-exclamation"></i></span>}
+                                maxLength="50" placeholder="Input your address" onChange={(event) => handleOnChange(event, 3)} value={student.address} />
+                            {isErr[3] && <span className='errMessage' style={{ top: '90px' }}>Please input address</span>}
+                            {isErr[3] && <span className='warning-icon' style={{ top: '65px' }}><i class="fa-solid fa-triangle-exclamation"></i></span>}
                         </div>
                     </div>
                     <div className='infor-action'>
@@ -205,9 +209,9 @@ export default function Profile() {
                         <h5 style={{ fontSize: '1.1em' }}>Phone number</h5>
                         <div>
                             <input disabled={!isEdit[4]} type="text" name="full_name" className={isErr[4] ? 'err' : null}
-                             maxLength="50" placeholder="Input your phone number" onChange={(event) => handleOnChange(event, 4)} value={student.phoneNum} />
-                            {isErr[4] && <span className='errMessage' style={{top: '90px'}}>Please input phone number</span>}
-                            {isErr[4] && <span className='warning-icon' style={{top: '65px'}}><i class="fa-solid fa-triangle-exclamation"></i></span>}
+                                maxLength="50" placeholder="Input your phone number" onChange={(event) => handleOnChange(event, 4)} value={student.phoneNum} />
+                            {isErr[4] && <span className='errMessage' style={{ top: '90px' }}>Please input phone number</span>}
+                            {isErr[4] && <span className='warning-icon' style={{ top: '65px' }}><i class="fa-solid fa-triangle-exclamation"></i></span>}
                         </div>
                     </div>
                     <div className='infor-action'>
